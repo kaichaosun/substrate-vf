@@ -275,6 +275,10 @@ impl pallet_valueflows_agent::Config for Runtime {
 	type Event = Event;
 }
 
+impl pallet_valueflows_action::Config for Runtime {
+	type Event = Event;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -293,6 +297,7 @@ construct_runtime!(
 		// Include the custom logic from the pallet-template in the runtime.
 		TemplateModule: pallet_template,
 		ValueFlowsAgent: pallet_valueflows_agent,
+		ValueFlowsAction: pallet_valueflows_action,
 	}
 );
 
