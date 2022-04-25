@@ -475,6 +475,12 @@ impl_runtime_apis! {
 		}
 	}
 
+	impl pallet_valueflows_action_rpc_runtime_api::ActionRuntimeApi<Block> for Runtime {
+		fn all_actions() -> Vec<pallet_valueflows_action::Action> {
+			ValueFlowsAction::all_actions()
+		}
+	}
+
 	#[cfg(feature = "runtime-benchmarks")]
 	impl frame_benchmarking::Benchmark<Block> for Runtime {
 		fn benchmark_metadata(extra: bool) -> (

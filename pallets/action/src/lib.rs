@@ -1,8 +1,11 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use codec::{Decode, Encode};
+#[cfg(feature = "std")]
+use serde::{Deserialize, Serialize};
 pub use pallet::*;
 
-use sp_std::prelude::Vec;
+use sp_std::prelude::*;
 
 #[cfg(test)]
 mod mock;
@@ -13,6 +16,9 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+#[derive(Encode, Decode, PartialEq)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "std", serde(rename_all = "camelCase"))]
 pub struct Action {
 	pub id: Vec<u8>, // todo use enum, and convert to string in client
 	pub label: Vec<u8>,
@@ -21,6 +27,8 @@ pub struct Action {
 	pub pairs_with: Vec<u8>,
 }
 
+#[derive(Encode, Decode, PartialEq)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum ActionEffect {
 	// for 'process' events
 	NoEffect,
@@ -30,6 +38,8 @@ pub enum ActionEffect {
 	DecrementIncrement,
 }
 
+#[derive(Encode, Decode, PartialEq)]
+#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub enum ProcessType {
 	NotApplicable,
 	Input,
@@ -77,5 +87,19 @@ pub mod pallet {
 
 			Ok(())
 		}
+	}
+}
+
+impl<T: Config> Pallet<T> {
+	pub fn all_actions() -> Vec<Action> {
+		let action = Action {
+			id: vec![0, 1], // dropoff
+			label: vec![0, 1],
+			resource_effect: ActionEffect::Increment,
+			input_output: ProcessType::Output,
+			pairs_with: vec![1, 0], // pickup
+		};
+
+		vec![action]
 	}
 }

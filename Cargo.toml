@@ -4,6 +4,8 @@ members = [
     "pallets/template",
     "pallets/agent",
     "pallets/action",
+	"pallets/action/rpc",
+	"pallets/action/rpc/runtime-api",
     "runtime",
 ]
 [profile.release]
