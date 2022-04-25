@@ -3599,6 +3599,7 @@ dependencies = [
  "jsonrpc-core",
  "node-template-runtime",
  "pallet-transaction-payment-rpc",
+ "pallet-valueflows-action-rpc",
  "sc-basic-authorship",
  "sc-cli",
  "sc-client-api",
@@ -3647,6 +3648,8 @@ dependencies = [
  "pallet-timestamp",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-valueflows-action",
+ "pallet-valueflows-action-rpc-runtime-api",
  "pallet-valueflows-agent",
  "parity-scale-codec",
  "scale-info",
@@ -4047,6 +4050,49 @@ dependencies = [
  "parity-scale-codec",
  "sp-api",
  "sp-runtime",
+]
+
+[[package]]
+name = "pallet-valueflows-action"
+version = "0.0.1"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-valueflows-action-rpc"
+version = "0.0.1"
+dependencies = [
+ "jsonrpc-core",
+ "jsonrpc-core-client",
+ "jsonrpc-derive",
+ "pallet-valueflows-action",
+ "pallet-valueflows-action-rpc-runtime-api",
+ "parity-scale-codec",
+ "sp-api",
+ "sp-blockchain",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-valueflows-action-rpc-runtime-api"
+version = "0.0.1"
+dependencies = [
+ "pallet-valueflows-action",
+ "parity-scale-codec",
+ "sp-api",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]

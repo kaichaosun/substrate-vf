@@ -275,6 +275,10 @@ impl pallet_valueflows_agent::Config for Runtime {
 	type Event = Event;
 }
 
+impl pallet_valueflows_action::Config for Runtime {
+	type Event = Event;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -293,6 +297,7 @@ construct_runtime!(
 		// Include the custom logic from the pallet-template in the runtime.
 		TemplateModule: pallet_template,
 		ValueFlowsAgent: pallet_valueflows_agent,
+		ValueFlowsAction: pallet_valueflows_action,
 	}
 );
 
@@ -467,6 +472,12 @@ impl_runtime_apis! {
 			len: u32,
 		) -> pallet_transaction_payment::FeeDetails<Balance> {
 			TransactionPayment::query_fee_details(uxt, len)
+		}
+	}
+
+	impl pallet_valueflows_action_rpc_runtime_api::ActionRuntimeApi<Block> for Runtime {
+		fn all_actions() -> Vec<pallet_valueflows_action::Action> {
+			ValueFlowsAction::all_actions()
 		}
 	}
 

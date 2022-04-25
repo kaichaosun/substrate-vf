@@ -13,6 +13,7 @@ use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder;
 use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
+use pallet_valueflows_action_rpc::{ActionApi, ActionRpcHandler};
 
 /// Full client dependencies.
 pub struct FullDeps<C, P> {
@@ -32,6 +33,7 @@ where
 	C: Send + Sync + 'static,
 	C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Index>,
 	C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
+	C::Api: pallet_valueflows_action_rpc::ActionRuntimeApi<Block>,
 	C::Api: BlockBuilder<Block>,
 	P: TransactionPool + 'static,
 {
@@ -44,6 +46,7 @@ where
 	io.extend_with(SystemApi::to_delegate(FullSystem::new(client.clone(), pool, deny_unsafe)));
 
 	io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(client.clone())));
+	io.extend_with(ActionApi::to_delegate(ActionRpcHandler::new(client.clone())));
 
 	// Extend this RPC with a custom API by using the following syntax.
 	// `YourRpcStruct` should have a reference to a client, which is needed

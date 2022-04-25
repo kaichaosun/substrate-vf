@@ -42,6 +42,7 @@ sp-version = { version = "5.0.0", default-features = false, git = "https://githu
 # Used for the node template's RPCs
 frame-system-rpc-runtime-api = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
 pallet-transaction-payment-rpc-runtime-api = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+pallet-valueflows-action-rpc-runtime-api = { version = "0.0.1", default-features = false, path = "../pallets/action/rpc/runtime-api" }
 
 # Used for runtime benchmarking
 frame-benchmarking = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18", optional = true }
@@ -53,6 +54,7 @@ pallet-template = { version = "4.0.0-dev", default-features = false, path = "../
 
 # Value Flows
 pallet-valueflows-agent = { version = "0.0.1", default-features = false, path = "../pallets/agent" }
+pallet-valueflows-action = { version = "0.0.1", default-features = false, path = "../pallets/action" }
 
 [build-dependencies]
 substrate-wasm-builder = { version = "5.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
@@ -75,6 +77,9 @@ std = [
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
 	"pallet-transaction-payment/std",
+	"pallet-valueflows-agent/std",
+	"pallet-valueflows-action/std",
+	"pallet-valueflows-action-rpc-runtime-api/std",
 	"sp-api/std",
 	"sp-block-builder/std",
 	"sp-consensus-aura/std",

@@ -1,0 +1,27 @@
+[package]
+name = "pallet-valueflows-action-rpc"
+version = "0.0.1"
+description = "RPC runtime API for valueflows action pallet."
+authors = ["Kaichao Sun <kaichaosuna@gmail.com>"]
+homepage = "https://www.valueflo.ws/"
+edition = "2021"
+license = "Unlicense"
+publish = false
+repository = "https://github.com/kaichaosun/substrate-valueflows"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.0.0" }
+jsonrpc-core = "18.0.0"
+jsonrpc-core-client = "18.0.0"
+jsonrpc-derive = "18.0.0"
+
+sp-api = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+sp-runtime = { version = "6.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+sp-blockchain = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+sp-std = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18" }
+
+pallet-valueflows-action = { version = "0.0.1", path = "../../action"  }
+pallet-valueflows-action-rpc-runtime-api = { version = "0.0.1", path = "./runtime-api"  }
