@@ -2,7 +2,6 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use codec::Codec;
 use pallet_valueflows_action::Action;
 use sp_std::prelude::Vec;
 

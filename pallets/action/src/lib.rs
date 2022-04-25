@@ -1,9 +1,9 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use codec::{Decode, Encode};
+pub use pallet::*;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
-pub use pallet::*;
 
 use sp_std::prelude::*;
 
@@ -62,13 +62,10 @@ pub mod pallet {
 	pub struct Pallet<T>(_);
 
 	#[pallet::event]
-	#[pallet::generate_deposit(pub(super) fn deposit_event)]
-	pub enum Event<T: Config> {
-	}
+	pub enum Event<T: Config> {}
 
 	#[pallet::error]
-	pub enum Error<T> {
-	}
+	pub enum Error<T> {}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
@@ -92,14 +89,133 @@ pub mod pallet {
 
 impl<T: Config> Pallet<T> {
 	pub fn all_actions() -> Vec<Action> {
-		let action = Action {
-			id: vec![0, 1], // dropoff
-			label: vec![0, 1],
-			resource_effect: ActionEffect::Increment,
-			input_output: ProcessType::Output,
-			pairs_with: vec![1, 0], // pickup
-		};
-
-		vec![action]
+		vec![
+			Action {
+				id: "dropoff".into(),
+				label: "dropoff".into(),
+				resource_effect: ActionEffect::Increment,
+				input_output: ProcessType::Output,
+				pairs_with: "pickup".into(),
+			},
+			Action {
+				id: "pickup".into(),
+				label: "pickup".into(),
+				resource_effect: ActionEffect::Decrement,
+				input_output: ProcessType::Input,
+				pairs_with: "dropoff".into(),
+			},
+			Action {
+				id: "consume".into(),
+				label: "consume".into(),
+				resource_effect: ActionEffect::Decrement,
+				input_output: ProcessType::Input,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "use".into(),
+				label: "use".into(),
+				resource_effect: ActionEffect::NoEffect,
+				input_output: ProcessType::Input,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "work".into(),
+				label: "work".into(),
+				resource_effect: ActionEffect::NoEffect,
+				input_output: ProcessType::Input,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "cite".into(),
+				label: "cite".into(),
+				resource_effect: ActionEffect::NoEffect,
+				input_output: ProcessType::Input,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "produce".into(),
+				label: "produce".into(),
+				resource_effect: ActionEffect::Increment,
+				input_output: ProcessType::Output,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "accept".into(),
+				label: "accept".into(),
+				resource_effect: ActionEffect::NoEffect,
+				input_output: ProcessType::Input,
+				pairs_with: "modify".into(),
+			},
+			Action {
+				id: "modify".into(),
+				label: "modify".into(),
+				resource_effect: ActionEffect::NoEffect,
+				input_output: ProcessType::Output,
+				pairs_with: "accept".into(),
+			},
+			Action {
+				id: "pass".into(),
+				label: "pass".into(),
+				resource_effect: ActionEffect::NoEffect,
+				input_output: ProcessType::Output,
+				pairs_with: "accept".into(),
+			},
+			Action {
+				id: "fail".into(),
+				label: "fail".into(),
+				resource_effect: ActionEffect::NoEffect,
+				input_output: ProcessType::Output,
+				pairs_with: "accept".into(),
+			},
+			Action {
+				id: "deliver_service".into(),
+				label: "deliver_service".into(),
+				resource_effect: ActionEffect::NoEffect,
+				input_output: ProcessType::Output,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "transfer_all_rights".into(),
+				label: "transfer_all_rights".into(),
+				resource_effect: ActionEffect::DecrementIncrement,
+				input_output: ProcessType::NotApplicable,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "transfer_custody".into(),
+				label: "transfer_custody".into(),
+				resource_effect: ActionEffect::DecrementIncrement,
+				input_output: ProcessType::NotApplicable,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "transfer".into(),
+				label: "transfer".into(),
+				resource_effect: ActionEffect::DecrementIncrement,
+				input_output: ProcessType::NotApplicable,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "move".into(),
+				label: "move".into(),
+				resource_effect: ActionEffect::DecrementIncrement,
+				input_output: ProcessType::NotApplicable,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "raise".into(),
+				label: "raise".into(),
+				resource_effect: ActionEffect::Increment,
+				input_output: ProcessType::NotApplicable,
+				pairs_with: "notApplicable".into(),
+			},
+			Action {
+				id: "lower".into(),
+				label: "lower".into(),
+				resource_effect: ActionEffect::Decrement,
+				input_output: ProcessType::NotApplicable,
+				pairs_with: "notApplicable".into(),
+			},
+		]
 	}
 }
