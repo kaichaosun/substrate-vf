@@ -16,6 +16,7 @@ pub mod pallet {
 	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
 	use scale_info::TypeInfo;
+	use sp_runtime::FixedI64;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -30,7 +31,6 @@ pub mod pallet {
 	pub struct Pallet<T>(_);
 
 	#[pallet::storage]
-	#[pallet::getter(fn agents)]
 	pub type Agents<T: Config> = StorageMap<
 		_,
 		Blake2_128Concat,
@@ -46,16 +46,36 @@ pub mod pallet {
 	}
 
 	#[pallet::storage]
-	#[pallet::getter(fn unit_id)]
 	pub type UnitId<T> = StorageValue<_, u32, ValueQuery>;
 
 	#[pallet::storage]
-	#[pallet::getter(fn units)]
 	pub type Units<T: Config> = StorageMap<
 		_,
 		Twox64Concat,
 		u32,
 		Unit<T>,
+	>;
+
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
+	#[scale_info(skip_type_params(T))]
+	pub struct SpatialThing<T: Config> {
+		name: BoundedVec<u8, T::MaxStringLength>,
+		note: Option<BoundedVec<u8, T::MaxStringLength>>,
+		mappable_address: Option<BoundedVec<u8, T::MaxStringLength>>,
+		lat: Option<FixedI64>,
+		long: Option<FixedI64>,
+		alt: Option<FixedI64>,
+	}
+
+	#[pallet::storage]
+	pub type SpatialThingId<T> = StorageValue<_, u32, ValueQuery>;
+
+	#[pallet::storage]
+	pub type SpatialThings<T: Config> = StorageMap<
+		_,
+		Twox64Concat,
+		u32,
+		SpatialThing<T>,
 	>;
 
 	#[pallet::event]
@@ -157,5 +177,85 @@ pub mod pallet {
 
 			Ok(())
 		}
+
+		/// Create a spatial thing
+		#[pallet::call_index(5)]
+		#[pallet::weight(10_000)]
+		pub fn create_spatial_thing(
+			origin: OriginFor<T>,
+			name: BoundedVec<u8, T::MaxStringLength>,
+			note: Option<BoundedVec<u8, T::MaxStringLength>>,
+			mappable_address: Option<BoundedVec<u8, T::MaxStringLength>>,
+			lat: Option<FixedI64>,
+			long: Option<FixedI64>,
+			alt: Option<FixedI64>,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
+
+			let spatial_thing_id = SpatialThingId::<T>::get();
+			let spatial_thing = SpatialThing::<T> {
+				name,
+				note,
+				mappable_address,
+				lat,
+				long,
+				alt,
+			};
+
+			SpatialThings::<T>::insert(spatial_thing_id, spatial_thing);
+			SpatialThingId::<T>::put(spatial_thing_id + 1);
+
+			Ok(())
+		}
+
+		/// Update a spatial thing
+		#[pallet::call_index(6)]
+		#[pallet::weight(10_000)]
+		pub fn update_spatial_thing(
+			origin: OriginFor<T>,
+			spatial_thing_id: u32,
+			name: BoundedVec<u8, T::MaxStringLength>,
+			note: Option<BoundedVec<u8, T::MaxStringLength>>,
+			mappable_address: Option<BoundedVec<u8, T::MaxStringLength>>,
+			lat: Option<FixedI64>,
+			long: Option<FixedI64>,
+			alt: Option<FixedI64>,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
+
+			let spatial_thing = SpatialThing::<T> {
+				name,
+				note,
+				mappable_address,
+				lat,
+				long,
+				alt,
+			};
+
+			SpatialThings::<T>::insert(spatial_thing_id, spatial_thing);
+
+			Ok(())
+		}
+
+		/// Delete a spatial thing
+		#[pallet::call_index(7)]
+		#[pallet::weight(10_000)]
+		pub fn delete_spatial_thing(
+			origin: OriginFor<T>,
+			spatial_thing_id: u32,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
+
+			SpatialThings::<T>::remove(spatial_thing_id);
+
+			Ok(())
+		}
+
 	}
 }
