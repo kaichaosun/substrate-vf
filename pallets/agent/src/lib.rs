@@ -78,6 +78,24 @@ pub mod pallet {
 		SpatialThing<T>,
 	>;
 
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
+	#[scale_info(skip_type_params(T))]
+	pub struct ProcessSpecification<T: Config> {
+		name: BoundedVec<u8, T::MaxStringLength>,
+		note: Option<BoundedVec<u8, T::MaxStringLength>>,
+	}
+
+	#[pallet::storage]
+	pub type ProcessSpecificationId<T> = StorageValue<_, u32, ValueQuery>;
+
+	#[pallet::storage]
+	pub type ProcessSpecifications<T: Config> = StorageMap<
+		_,
+		Twox64Concat,
+		u32,
+		ProcessSpecification<T>,
+	>;
+
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
@@ -253,6 +271,69 @@ pub mod pallet {
 			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
 
 			SpatialThings::<T>::remove(spatial_thing_id);
+
+			Ok(())
+		}
+
+		/// Create a process specification
+		#[pallet::call_index(8)]
+		#[pallet::weight(10_000)]
+		pub fn create_process_specification(
+			origin: OriginFor<T>,
+			name: BoundedVec<u8, T::MaxStringLength>,
+			note: Option<BoundedVec<u8, T::MaxStringLength>>,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
+
+			let process_spec_id = ProcessSpecificationId::<T>::get();
+			let process_spec = ProcessSpecification::<T> {
+				name,
+				note,
+			};
+
+			ProcessSpecifications::<T>::insert(process_spec_id, process_spec);
+			ProcessSpecificationId::<T>::put(process_spec_id + 1);
+
+			Ok(())
+		}
+
+		/// Update a process specification
+		#[pallet::call_index(9)]
+		#[pallet::weight(10_000)]
+		pub fn update_process_specification(
+			origin: OriginFor<T>,
+			process_spec_id: u32,
+			name: BoundedVec<u8, T::MaxStringLength>,
+			note: Option<BoundedVec<u8, T::MaxStringLength>>,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
+
+			let process_spec = ProcessSpecification::<T> {
+				name,
+				note,
+			};
+
+			ProcessSpecifications::<T>::insert(process_spec_id, process_spec);
+
+			Ok(())
+		}
+
+		/// Delete a process specification
+		#[pallet::call_index(10)]
+		#[pallet::weight(10_000)]
+		pub fn delete_process_specification(
+			origin: OriginFor<T>,
+			process_spec_id: u32,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
+
+			ProcessSpecifications::<T>::remove(process_spec_id);
 
 			Ok(())
 		}
