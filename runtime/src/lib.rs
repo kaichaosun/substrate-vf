@@ -283,6 +283,7 @@ impl pallet_template::Config for Runtime {
 impl pallet_valueflows_agent::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type MaxStringLength = ConstU32<10>;
+	type MaxArrayLength = ConstU32<10>;
 }
 
 // impl pallet_valueflows_action::Config for Runtime {

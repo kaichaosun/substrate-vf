@@ -24,6 +24,8 @@ pub mod pallet {
 		/// The maximum length of string.
 		#[pallet::constant]
 		type MaxStringLength: Get<u32>;
+		#[pallet::constant]
+		type MaxArrayLength: Get<u32>;
 	}
 
 	#[pallet::pallet]
@@ -94,6 +96,29 @@ pub mod pallet {
 		Twox64Concat,
 		u32,
 		ProcessSpecification<T>,
+	>;
+
+	// TODO use ipfs to store images
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
+	#[scale_info(skip_type_params(T))]
+	pub struct ResourceSpecification<T: Config> {
+		name: BoundedVec<u8, T::MaxStringLength>,
+		images: BoundedVec<T::Hash, T::MaxArrayLength>,
+		note: Option<BoundedVec<u8, T::MaxStringLength>>,
+		resource_classified_as: BoundedVec<BoundedVec<u8, T::MaxStringLength>, T::MaxArrayLength>,
+		default_unit_of_resource_id: Option<u32>,
+		default_unit_of_effort_id: Option<u32>,
+	}
+
+	#[pallet::storage]
+	pub type ResourceSpecificationId<T> = StorageValue<_, u32, ValueQuery>;
+
+	#[pallet::storage]
+	pub type ResourceSpecifications<T: Config> = StorageMap<
+		_,
+		Twox64Concat,
+		u32,
+		ResourceSpecification<T>,
 	>;
 
 	#[pallet::event]
@@ -334,6 +359,85 @@ pub mod pallet {
 			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
 
 			ProcessSpecifications::<T>::remove(process_spec_id);
+
+			Ok(())
+		}
+
+		/// Create a resource specification
+		#[pallet::call_index(11)]
+		#[pallet::weight(10_000)]
+		pub fn create_resource_specification(
+			origin: OriginFor<T>,
+			name: BoundedVec<u8, T::MaxStringLength>,
+			images: BoundedVec<T::Hash, T::MaxArrayLength>,
+			note: Option<BoundedVec<u8, T::MaxStringLength>>,
+			resource_classified_as: BoundedVec<BoundedVec<u8, T::MaxStringLength>, T::MaxArrayLength>,
+			default_unit_of_resource_id: Option<u32>,
+			default_unit_of_effort_id: Option<u32>,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
+
+			let resource_spec_id = ResourceSpecificationId::<T>::get();
+			let resource_spec = ResourceSpecification::<T> {
+				name,
+				images,
+				note,
+				resource_classified_as,
+				default_unit_of_resource_id,
+				default_unit_of_effort_id,
+			};
+
+			ResourceSpecifications::<T>::insert(resource_spec_id, resource_spec);
+			ResourceSpecificationId::<T>::put(resource_spec_id + 1);
+
+			Ok(())
+		}
+
+		/// Update a resource specification
+		#[pallet::call_index(12)]
+		#[pallet::weight(10_000)]
+		pub fn update_resource_specification(
+			origin: OriginFor<T>,
+			resource_spec_id: u32,
+			name: BoundedVec<u8, T::MaxStringLength>,
+			images: BoundedVec<T::Hash, T::MaxArrayLength>,
+			note: Option<BoundedVec<u8, T::MaxStringLength>>,
+			resource_classified_as: BoundedVec<BoundedVec<u8, T::MaxStringLength>, T::MaxArrayLength>,
+			default_unit_of_resource_id: Option<u32>,
+			default_unit_of_effort_id: Option<u32>,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
+
+			let resource_spec = ResourceSpecification::<T> {
+				name,
+				images,
+				note,
+				resource_classified_as,
+				default_unit_of_resource_id,
+				default_unit_of_effort_id,
+			};
+
+			ResourceSpecifications::<T>::insert(resource_spec_id, resource_spec);
+
+			Ok(())
+		}
+
+		/// Delete a resource specification
+		#[pallet::call_index(13)]
+		#[pallet::weight(10_000)]
+		pub fn delete_resource_specification(
+			origin: OriginFor<T>,
+			resource_spec_id: u32,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+
+			ensure!(Agents::<T>::contains_key(&who), Error::<T>::AgentIsNotRegistered);
+
+			ResourceSpecifications::<T>::remove(resource_spec_id);
 
 			Ok(())
 		}
