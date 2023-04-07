@@ -18,7 +18,10 @@ pub mod pallet {
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		/// The maximum length of string.
+		// #[pallet::constant]
+		// type MaxStringLength: Get<u32>;
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 	}
 
 	#[pallet::pallet]
@@ -33,6 +36,20 @@ pub mod pallet {
 		T::AccountId,
 		bool,
 	>;
+
+	// #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, scale_info::TypeInfo)]
+	// pub struct Unit<T: Config> {
+	// 	label: BoundedVec<u8, T::MaxStringLength>,
+	// 	symbol: BoundedVec<u8, T::MaxStringLength>,
+	// }
+
+	// #[pallet::storage]
+	// pub type Units<T: Config> = StorageMap<
+	// 	_,
+	// 	Twox64Concat,
+	// 	T::AccountId,
+	// 	Unit<T>,
+	// >;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -49,6 +66,7 @@ pub mod pallet {
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		/// TODO Get agent public key, should be RPC instead or from client side
+		#[pallet::call_index(0)]
 		#[pallet::weight(10_000)]
 		pub fn get_my_agent_pubkey(origin: OriginFor<T>) -> DispatchResult {
 			let _ = ensure_signed(origin)?;
@@ -58,6 +76,7 @@ pub mod pallet {
 
 		/// Register agent
 		/// TODO instead of put it in a vector, should better use a map
+		#[pallet::call_index(1)]
 		#[pallet::weight(10_000)]
 		pub fn register_agent(origin: OriginFor<T>) -> DispatchResult {
 			let who = ensure_signed(origin)?;
